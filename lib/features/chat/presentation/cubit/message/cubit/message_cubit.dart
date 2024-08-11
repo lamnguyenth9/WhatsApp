@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_application_10/features/chat/domain/entities/chat_entity.dart';
+import 'package:flutter_application_10/features/chat/domain/entities/message_reply_entity.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/delete_message_usecase.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/get_messages_usecase.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/send_message_usecase.dart';
@@ -51,5 +52,10 @@ class MessageCubit extends Cubit<MessageState> {
         }catch(e){
            emit(MessageLoadingFailure());
         }
+      }
+      MessageReplyEntity messageReplyEntity = MessageReplyEntity();
+      MessageReplyEntity get getMessageReply=>MessageReplyEntity();
+      set setMessageReply(MessageReplyEntity messageReply){
+        this.messageReplyEntity=messageReply;
       }
 }

@@ -117,7 +117,7 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
         createdAt: message.createdAt,
         isSeen: message.isSeen,
         message: message.message,
-        messageId: message.messageId,
+        messageId: messageId,
         messageType: message.messageType,
         recipientName: message.recipientName,
         recipientUid: message.recipientUid,
@@ -159,6 +159,7 @@ class ChatRemoteDataSourceImpl extends ChatRemoteDataSource {
     .doc(message.messageId);
     try{
       await messageRef.delete();
+      print(messageRef.id);
     }catch(e){
       print("Something went wrong");
     }

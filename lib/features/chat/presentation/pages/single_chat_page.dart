@@ -5,11 +5,16 @@ import 'package:agora_uikit/agora_uikit.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_10/features/app/const/message_type_const.dart';
+import 'package:flutter_application_10/features/app/global/widget/dialog_widget.dart';
+import 'package:flutter_application_10/features/app/global/widget/show_image_picked_widget.dart';
+import 'package:flutter_application_10/features/app/global/widget/show_video_picked_widget.dart';
 import 'package:flutter_application_10/features/app/theme/style.dart';
 import 'package:flutter_application_10/features/chat/domain/entities/chat_entity.dart';
 import 'package:flutter_application_10/features/chat/domain/entities/message_entity.dart';
+import 'package:flutter_application_10/features/chat/domain/entities/message_reply_entity.dart';
 import 'package:flutter_application_10/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
 import 'package:flutter_application_10/features/chat/presentation/widget/chat_ultis.dart';
+import 'package:flutter_application_10/features/chat/presentation/widget/message_widget/message_type_widget.dart';
 import 'package:flutter_application_10/storage/storage_provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_sound/public/flutter_sound_recorder.dart';
@@ -19,6 +24,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:swipe_to/swipe_to.dart';
 import 'package:giphy_picker/giphy_picker.dart';
 import '../../../app/const/app_const.dart';
+import '../widget/message_widget/message_reply_preview_widget.dart';
 
 class SingleChatPage extends StatefulWidget {
   final MessageEntity message;
@@ -37,7 +43,16 @@ class _SingleChatPageState extends State<SingleChatPage> {
     _textMessageController.dispose();
     super.dispose();
   }
-
+  void onMessageSwipe({
+    String? message,String? username,String? type,bool? isMe
+  }){
+    BlocProvider.of<MessageCubit>(context).setMessageReply=MessageReplyEntity(
+      isMe: isMe,
+      message: message,
+      messageType: type,
+      usename: username
+    );
+  }
   @override
   void initState() {
     _soundRecorder = FlutterSoundRecorder();
@@ -52,9 +67,9 @@ class _SingleChatPageState extends State<SingleChatPage> {
 
   Future<void> _scrollToBottom() async {
     if (scrollController.hasClients) {
-      await Future.delayed(Duration(milliseconds: 100));
+      await Future.delayed(const Duration(milliseconds: 100));
       scrollController.animateTo(scrollController.position.maxScrollExtent,
-          duration: Duration(milliseconds: 300), curve: Curves.easeOut);
+          duration: const Duration(milliseconds: 300), curve: Curves.easeOut);
     }
   }
 
@@ -111,6 +126,8 @@ class _SingleChatPageState extends State<SingleChatPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollToBottom();
     });
+    final provide= BlocProvider.of<MessageCubit>(context);
+    bool _isRepling=provide.messageReplyEntity.message!=null;
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -177,37 +194,109 @@ class _SingleChatPageState extends State<SingleChatPage> {
                           final message = messages[index];
                           if (message.senderUid == widget.message.senderUid) {
                             return _messageLayout(
+                              messageType: message.messageType,
                                 message: message.message,
                                 aligment: Alignment.centerRight,
                                 createAt: message.createdAt,
                                 isSeen: false,
                                 isShowTick: true,
                                 messageBgColor: messageColor,
-                                onLongPress: () {},
-                                onSwipe: (value) {});
+                                onLongPress: () {
+                                  displayAlertDialog(
+                                    context, 
+                                    onTap: (){
+                                      BlocProvider.of<MessageCubit>(context).deleteMessage(message: MessageEntity(
+                                        senderUid: widget.message.senderUid,
+                                        recipientUid: widget.message.recipientUid,
+                                        messageId: message.messageId
+                                      ));
+                                      Navigator.pop(context);
+                                    }, 
+                                    confirmTitle: "Delete", 
+                                    content: "Are you sure want to delete?");
+                                },
+                                onSwipe: (va) {
+                                  onMessageSwipe(
+                                    isMe: true,
+                                    message: message.message,
+                                    type: message.messageType,
+                                    username: message.senderName
+                                  );
+                                  setState(() {
+                                    
+                                  });
+                                });
                           } else {
                             return _messageLayout(
+                              messageType: message.messageType,
                                 message: message.message,
                                 aligment: Alignment.centerLeft,
                                 createAt: message.createdAt,
                                 isSeen: true,
                                 isShowTick: false,
                                 messageBgColor: senderMessageColor,
-                                onLongPress: () {},
-                                onSwipe: (value) {});
+                                onLongPress: () {
+                                  displayAlertDialog(
+                                    context, 
+                                    onTap: (){
+                                      BlocProvider.of<MessageCubit>(context).deleteMessage(message: MessageEntity(
+                                        senderUid: widget.message.senderUid,
+                                        recipientUid: widget.message.recipientUid,
+                                        messageId: message.messageId
+                                      ));
+                                      Navigator.pop(context);
+                                    }, 
+                                    confirmTitle: "Delete", 
+                                    content: "Are you sure want to delete?");
+                                },
+                                onSwipe: (value) {onMessageSwipe(
+                                    isMe: false ,
+                                    message: message.message,
+                                    type: message.messageType,
+                                    username: message.senderName
+                                  );
+                                  setState(() {
+                                    
+                                  });});
                           }
                         },
                       ),
                     ),
+                    _isRepling==true
+                    ? const SizedBox(height: 5,)
+                    : const SizedBox(height: 0,),
+                    _isRepling==true?
+                    Row(
+                      children: [
+                        Expanded(
+                          child:MessageReplayPreviewWidget(
+                            onCancelReplayListener:(){
+                              BlocProvider.of<MessageCubit>(context)
+                              .setMessageReply=MessageReplyEntity();
+                              setState(() {
+                                
+                              });
+                            }
+                          )
+                           ),
+                           Container(height: 60,)
+                      ],
+                    )
+                    :Container(),
+
+
                     Container(
-                        margin: const EdgeInsets.only(
-                            left: 10, right: 10, top: 5, bottom: 5),
+                        margin:  EdgeInsets.only(
+                            left: 10, right: 10, top: _isRepling==true?0:5, bottom: 5),
                         child: Row(children: [
                           Expanded(
                               child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 5),
                             decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(25),
+                                borderRadius: _isRepling==true?const BorderRadius.only(
+                                  bottomLeft: Radius.circular(25),
+                                  bottomRight: Radius.circular(25)
+                                ):BorderRadius.circular(25),
                                 color: appBarColor),
                             height: 50,
                             child: TextField(
@@ -254,10 +343,33 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                         const SizedBox(
                                           width: 15,
                                         ),
-                                        const Icon(
-                                          Icons.camera_alt,
-                                          color: Colors.grey,
-                                        ),
+                                         GestureDetector(
+                                          onTap:(){
+                                            selectImage().then((value){
+                                              if(_image!=null){
+                                                WidgetsBinding.instance
+                                                .addPostFrameCallback((timeStamp){
+                                                  showImagePickedBottomModalSheet(
+                                                    context,
+                                                    recipientName: widget
+                                                    .message
+                                                    .recipientName,
+                                                    file: _image,
+                                                    onTap: (){
+                                                      _sendImageMessage();
+                                                      Navigator.pop(context);
+
+                                                    }
+                                                  );
+                                                });
+                                              }
+                                            });
+                                          },
+                                           child: const Icon(
+                                            Icons.camera_alt,
+                                            color: Colors.grey,
+                                                                                   ),
+                                         ),
                                         const SizedBox(
                                           width: 10,
                                         )
@@ -304,7 +416,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
                           width: double.infinity,
                           height: MediaQuery.of(context).size.width * 0.2,
                           padding:
-                              EdgeInsets.symmetric(horizontal: 5, vertical: 20),
+                              const EdgeInsets.symmetric(horizontal: 5, vertical: 20),
                           decoration: BoxDecoration(
                               color: bottomAttackContainerColor,
                               borderRadius: BorderRadius.circular(10)),
@@ -357,11 +469,32 @@ class _SingleChatPageState extends State<SingleChatPage> {
                                   _attachWindowItem(
                                       icon: Icons.gif_box_outlined,
                                       color: Colors.indigoAccent,
-                                      title: "Gift"),
+                                      title: "Gift",
+                                      onTap: (){
+                                        _sendGifMessage();
+                                      }),
                                   _attachWindowItem(
                                       icon: Icons.videocam_rounded,
                                       color: Colors.lightGreen,
-                                      title: "Video")
+                                      title: "Video",
+                                      onTap: (){
+                                        selectVideo().then((value){
+                                          if(_video!=null){
+                                            WidgetsBinding.instance
+                                            .addPostFrameCallback((timesTamp){
+                                                showVideoPickedBottomModalSheet(
+                                                  context,
+                                                  file: _video,
+                                                  recipientName: widget.message.recipientName,
+                                                  onTap: (){
+                                                    _sendVideoMessage();
+                                                    Navigator.pop(context);
+                                                  }
+                                                  );
+                                            });
+                                          }
+                                        });
+                                      })
                                 ],
                               )
                             ],
@@ -385,6 +518,7 @@ class _SingleChatPageState extends State<SingleChatPage> {
       Timestamp? createAt,
       Function(DragUpdateDetails)? onSwipe,
       String? message,
+      String? messageType,
       bool? isShowTick,
       bool? isSeen,
       VoidCallback? onLongPress}) {
@@ -402,16 +536,16 @@ class _SingleChatPageState extends State<SingleChatPage> {
                   children: [
                     Container(
                         margin: const EdgeInsets.only(top: 10),
-                        padding: const EdgeInsets.only(
-                            left: 5, right: 85, top: 5, bottom: 5),
+                        padding:  EdgeInsets.only(
+                            left: 5, right:messageType==MessageTypeConst.textMessage?85:5 , top: 5, bottom: 5),
                         constraints: BoxConstraints(
                             maxWidth: MediaQuery.of(context).size.width * 0.80),
                         decoration: BoxDecoration(
                             color: messageBgColor,
                             borderRadius: BorderRadius.circular(8)),
-                        child: Text(
-                          "$message",
-                          style: const TextStyle(color: Colors.white),
+                        child: MessageTypeWidget(
+                          message: message,
+                          type: messageType,
                         )),
                     const SizedBox(
                       height: 3,
