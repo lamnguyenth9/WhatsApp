@@ -56,7 +56,8 @@ class _ContactPageState extends State<ContactPage> {
                     senderProfile: currentUser.profileUrl,
                     recipientName: contact.username,
                     recipientProfile: contact.profileUrl,
-                    recipientUid: contact.uid
+                    recipientUid: contact.uid,
+                    uid:widget.uid
                   ));
                   },
                   child: ListTile(

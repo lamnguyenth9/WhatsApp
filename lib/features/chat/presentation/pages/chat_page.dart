@@ -48,7 +48,9 @@ class _ChatPageState extends State<ChatPage> {
                     senderProfile: chat.senderProfile,
                     recipientName: chat.recipientName,
                     recipientProfile: chat.recipientProfile,
-                    recipientUid: chat.recipientUid
+                    recipientUid: chat.recipientUid,
+                    uid: widget.uid
+                  
                   ));
                 },
                 child: ListTile(

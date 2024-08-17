@@ -10,6 +10,8 @@ abstract class ChatRemoteDataSource{
 
     Future<void> deleteMessage(MessageEntity message);
 
+    Future<void> seenMessageUpdate(MessageEntity message);
+
     Future<void> deleteChat(ChatEntity chat);
 
 

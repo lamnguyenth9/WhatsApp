@@ -5,6 +5,9 @@ import 'package:flutter_application_10/features/app/theme/style.dart';
 import 'package:flutter_application_10/features/call/presentation/pages/call_history_page.dart';
 import 'package:flutter_application_10/features/chat/presentation/pages/chat_page.dart';
 import 'package:flutter_application_10/features/status/presentaion/pages/status_page.dart';
+import 'package:flutter_application_10/features/user/domain/entities/user_entity.dart';
+import 'package:flutter_application_10/features/user/presentation/bloc/user/cubit/user_cubit.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
   final String uid;
@@ -14,11 +17,12 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin,WidgetsBindingObserver {
   TabController? _tabController;
   int _currentIndex=0;
   @override
   void initState() {
+    WidgetsBinding.instance.addObserver(this);
     _tabController=TabController(length: 3,vsync: this);
     _tabController!.addListener((){
       setState(() {
@@ -29,8 +33,37 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _tabController!.dispose();
     super.dispose();
+  }
+  @override
+  void didChangeApplifecycleState(AppLifecycleState state){
+    super.didChangeAppLifecycleState(state);
+    switch(state){
+      
+      case AppLifecycleState.detached:
+        // TODO: Handle this case.
+      case AppLifecycleState.resumed:
+        BlocProvider.of<UserCubit>(context).updateUser(user: 
+        UserEntity(
+          uid: widget.uid,
+          isOnline: true
+        ));
+        break;
+      case AppLifecycleState.inactive:
+        // TODO: Handle this case.
+      case AppLifecycleState.hidden:
+        // TODO: Handle this case.
+        break;
+      case AppLifecycleState.paused:
+        BlocProvider.of<UserCubit>(context).updateUser(user: 
+        UserEntity(
+          uid: widget.uid,
+          isOnline: false 
+        ));
+        break;
+    }
   }
   @override
   Widget build(BuildContext context) {

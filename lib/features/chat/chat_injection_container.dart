@@ -6,6 +6,7 @@ import 'package:flutter_application_10/features/chat/domain/use_cases/delete_mes
 import 'package:flutter_application_10/features/chat/domain/use_cases/delete_my_chat_usecase.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/get_messages_usecase.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/get_my_chat_usecase.dart';
+import 'package:flutter_application_10/features/chat/domain/use_cases/seen_message_update_usecase.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/send_message_usecase.dart';
 import 'package:flutter_application_10/features/chat/presentation/cubit/chat/cubit/chat_cubit.dart';
 import 'package:flutter_application_10/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
@@ -19,13 +20,15 @@ Future< void> ChatInjectionContainer()async{
    sl.registerFactory<MessageCubit>(()=>MessageCubit(
     deleteMessageUsecase: sl.call(), 
     sendMessageUsecase: sl.call(), 
-    getMessagesUsecase: sl.call()));
+    getMessagesUsecase: sl.call(),
+    seenMessageUpdateUsecase: sl.call()));
   //*USECASE
    sl.registerLazySingleton<DeleteMessageUsecase>(()=>DeleteMessageUsecase(chatRepository: sl.call()));
    sl.registerLazySingleton<DeleteMyChatUsecase>(()=>DeleteMyChatUsecase(chatRepository: sl.call()));
    sl.registerLazySingleton<GetMessagesUsecase>(()=>GetMessagesUsecase(chatRepository: sl.call()));
    sl.registerLazySingleton<GetMyChatUsecase>(()=>GetMyChatUsecase(chatRepository: sl.call()));
    sl.registerLazySingleton<SendMessageUsecase>(()=>SendMessageUsecase(chatRepository: sl.call()));
+   sl.registerLazySingleton<SeenMessageUpdateUsecase>(()=>SeenMessageUpdateUsecase(chatRepository: sl.call()));
   //*REPOSITORY & DATA SOURCE
   sl.registerLazySingleton<ChatRepository>(()=>ChatRepositpryImpl(chatRemoteDataSource: sl.call()));
   sl.registerLazySingleton<ChatRemoteDataSource>(()=>ChatRemoteDataSourceImpl(firestore: sl.call()));

@@ -6,6 +6,7 @@ import 'package:flutter_application_10/features/chat/domain/entities/chat_entity
 import 'package:flutter_application_10/features/chat/domain/entities/message_reply_entity.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/delete_message_usecase.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/get_messages_usecase.dart';
+import 'package:flutter_application_10/features/chat/domain/use_cases/seen_message_update_usecase.dart';
 import 'package:flutter_application_10/features/chat/domain/use_cases/send_message_usecase.dart';
 
 import '../../../../domain/entities/message_entity.dart';
@@ -16,11 +17,13 @@ class MessageCubit extends Cubit<MessageState> {
   final DeleteMessageUsecase deleteMessageUsecase;
   final SendMessageUsecase sendMessageUsecase;
   final GetMessagesUsecase getMessagesUsecase;
+  final SeenMessageUpdateUsecase seenMessageUpdateUsecase;
 
   MessageCubit(
       {required this.deleteMessageUsecase,
       required this.sendMessageUsecase,
-      required this.getMessagesUsecase})
+      required this.getMessagesUsecase,
+      required this.seenMessageUpdateUsecase})
       : super(MessageInitial());
       Future<void> getMessage({required MessageEntity message})async{
         try{
@@ -30,8 +33,10 @@ class MessageCubit extends Cubit<MessageState> {
             emit(MessageLoaded(messages: messages));
            });   
         } on SocketException{
+          print(SocketException);
            emit(MessageLoadingFailure());
         }catch(e){
+          print(e.toString());
            emit(MessageLoadingFailure());
         }
       }
@@ -39,8 +44,10 @@ class MessageCubit extends Cubit<MessageState> {
         try{
           await deleteMessageUsecase.call(message);
         }on SocketException{
+          print(SocketException);
            emit(MessageLoadingFailure());
         }catch(e){
+          print(e.toString());
            emit(MessageLoadingFailure());
         }
       }
@@ -48,8 +55,21 @@ class MessageCubit extends Cubit<MessageState> {
         try{
           await sendMessageUsecase.call(message, chat);
         }on SocketException{
+          print(SocketException);
            emit(MessageLoadingFailure());
         }catch(e){
+          print(e.toString());
+           emit(MessageLoadingFailure());
+        }
+      }
+      Future<void> seenMessage({required MessageEntity message})async{
+        try{
+          await seenMessageUpdateUsecase.call(message);
+        }on SocketException{
+          print(SocketException);
+           emit(MessageLoadingFailure());
+        }catch(e){
+          print(e.toString());
            emit(MessageLoadingFailure());
         }
       }

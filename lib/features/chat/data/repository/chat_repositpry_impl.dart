@@ -21,5 +21,8 @@ class ChatRepositpryImpl extends ChatRepository{
 
   @override
   Future<void> sendMessage(ChatEntity chat, MessageEntity message) async=>chatRemoteDataSource.sendMessage(chat, message);
+  
+  @override
+  Future<void> seenMessageUpdate(MessageEntity message) async=>chatRemoteDataSource.seenMessageUpdate(message);
 
 }
