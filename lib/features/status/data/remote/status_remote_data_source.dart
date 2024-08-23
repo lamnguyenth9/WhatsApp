@@ -1,6 +1,6 @@
 import 'package:flutter_application_10/features/status/domain/entities/status_entity.dart';
 
-abstract class StatusRepository{
+abstract class StatusRemoteDataSource{
   Future<void> createStatus(StatusEntity status);
   Future<void> updateStatus(StatusEntity status);
   Future<void> updateOnlyImageStatus(StatusEntity status);

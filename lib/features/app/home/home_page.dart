@@ -10,8 +10,9 @@ import 'package:flutter_application_10/features/user/presentation/bloc/user/cubi
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class HomePage extends StatefulWidget {
+  final int? index;
   final String uid;
-  const HomePage({super.key, required this.uid});
+  const HomePage({super.key, required this.uid,  this.index});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -29,6 +30,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         _currentIndex=_tabController!.index;
       });
     });
+    if(widget.index!=null){
+      setState(() {
+        _currentIndex=widget.index!;
+        _tabController!.animateTo(1);
+      });
+    }
     super.initState();
   }
   @override
@@ -141,7 +148,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         controller: _tabController,
         children:  [
           ChatPage(uid: widget.uid,),
-          const StatusPage(),
+           StatusPage(uid: widget.uid,),
           const CallHistoryPage()
         ]),
     );

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_10/features/app/global/widget/profile_widget.dart';
 import 'package:flutter_application_10/features/app/theme/style.dart';
 import 'package:timeago/timeago.dart'as time_ago;
+import 'package:get_time_ago/get_time_ago.dart';
 
 class MyStatusPage extends StatefulWidget {
   const MyStatusPage({super.key});
@@ -36,7 +37,7 @@ class _MyStatusPageState extends State<MyStatusPage> {
                 ),
                 const SizedBox(width: 15,),
                 Expanded(child: Text(
-                  time_ago.format(DateTime.now().subtract(Duration(seconds: DateTime.now().second)))
+                  GetTimeAgo.parse(DateTime.now().subtract(Duration(seconds: DateTime.now().second)))
                 )),
                 PopupMenuButton(
                   icon:Icon(Icons.more_vert, color: Colors.grey.withOpacity(.5),),

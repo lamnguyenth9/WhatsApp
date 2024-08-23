@@ -3,6 +3,8 @@ import 'package:flutter_application_10/features/app/home/home_page.dart';
 import 'package:flutter_application_10/features/app/theme/style.dart';
 import 'package:flutter_application_10/features/chat/presentation/cubit/chat/cubit/chat_cubit.dart';
 import 'package:flutter_application_10/features/chat/presentation/cubit/message/cubit/message_cubit.dart';
+import 'package:flutter_application_10/features/status/presentaion/cubit/get_my_status/cubit/get_my_status_cubit.dart';
+import 'package:flutter_application_10/features/status/presentaion/cubit/get_status/cubit/status_cubit.dart';
 import 'package:flutter_application_10/features/user/presentation/bloc/auth/cubit/auth_cubit.dart';
 import 'package:flutter_application_10/features/user/presentation/bloc/credential/cubit/credential_cubit.dart';
 import 'package:flutter_application_10/features/user/presentation/bloc/get_device_number/cubit/get_device_number_cubit.dart';
@@ -51,6 +53,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => di.sl<MessageCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => di.sl<StatusCubit>(),
+        ),
+        BlocProvider(
+          create: (context) => di.sl<GetMyStatusCubit>(),
         ),
       ],
       child: MaterialApp(

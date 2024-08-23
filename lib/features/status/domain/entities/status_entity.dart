@@ -9,7 +9,7 @@ class StatusEntity extends Equatable {
   final String? uid;
   final String? username;
   final String? profileUrl;
-  final Timestamp? createedAt;
+  final Timestamp? createdAt;
   final String? phoneNumber;
   final String? caption;
   final List<StatusImageEntity>? stories;
@@ -20,7 +20,7 @@ class StatusEntity extends Equatable {
       this.uid,
       this.username,
       this.profileUrl,
-      this.createedAt,
+      this.createdAt,
       this.phoneNumber,
       this.caption,
       this.stories});
@@ -33,7 +33,7 @@ class StatusEntity extends Equatable {
         uid,
         username,
         profileUrl,
-        createedAt,
+        createdAt,
         phoneNumber,
         caption,
         stories

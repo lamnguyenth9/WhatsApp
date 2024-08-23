@@ -6,7 +6,7 @@ class GetMyStatusFutureUsecase{
   GetMyStatusFutureUsecase({
     required this.repository
   });
-  Stream<List<StatusEntity>> call(String uid){
+  Future<List<StatusEntity>> call(String uid){
     return repository.getStatusFuture(uid);
   }
 }
